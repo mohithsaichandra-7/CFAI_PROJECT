@@ -1,0 +1,84 @@
+import time
+from datetime import datetime
+
+# Inventory Database
+inventory = {
+    "Whiskey": {"stock": 25, "threshold": 10},
+    "Vodka": {"stock": 15, "threshold": 8},
+    "Beer": {"stock": 40, "threshold": 15},
+    "Wine": {"stock": 20, "threshold": 10},
+    "Sandwich": {"stock": 30, "threshold": 12},
+    "Burger": {"stock": 18, "threshold": 8},
+    "Pasta": {"stock": 22, "threshold": 10},
+    "Soft Drink": {"stock": 50, "threshold": 20}
+}
+
+# Warehouse Stock
+warehouse = {
+    "Whiskey": 100,
+    "Vodka": 100,
+    "Beer": 200,
+    "Wine": 150,
+    "Sandwich": 100,
+    "Burger": 100,
+    "Pasta": 100,
+    "Soft Drink": 200
+}
+
+
+def generate_restock_order(item):
+    current_stock = inventory[item]["stock"]
+    threshold = inventory[item]["threshold"]
+
+    # Reorder quantity
+    order_qty = (threshold * 3) - current_stock
+
+    if warehouse[item] >= order_qty:
+        warehouse[item] -= order_qty
+        inventory[item]["stock"] += order_qty
+
+        print("\n===== RESTOCK ORDER GENERATED =====")
+        print(f"Time: {datetime.now()}")
+        print(f"Item: {item}")
+        print(f"Current Stock: {current_stock}")
+        print(f"Threshold: {threshold}")
+        print(f"Ordered Quantity: {order_qty}")
+        print(f"Warehouse Remaining: {warehouse[item]}")
+        print("===================================\n")
+
+    else:
+        print(f"WARNING: Warehouse stock insufficient for {item}")
+
+
+def monitor_inventory():
+    print("Airport Lounge Inventory Monitoring Started...\n")
+
+    while True:
+        for item, details in inventory.items():
+            if details["stock"] <= details["threshold"]:
+                generate_restock_order(item)
+
+        time.sleep(5)  # Check every 5 seconds
+
+
+def consume_inventory(item, quantity):
+    if item in inventory:
+        if inventory[item]["stock"] >= quantity:
+            inventory[item]["stock"] -= quantity
+            print(f"{quantity} units of {item} consumed.")
+        else:
+            print(f"Not enough {item} in stock.")
+    else:
+        print("Item not found.")
+
+
+# Demo Simulation
+if __name__ == "__main__":
+
+    # Simulate peak flight consumption
+    consume_inventory("Whiskey", 18)
+    consume_inventory("Beer", 30)
+    consume_inventory("Sandwich", 22)
+    consume_inventory("Burger", 12)
+
+    monitor_inventory()
